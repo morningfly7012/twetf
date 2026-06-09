@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>台股 ETF 試算機｜熱門ETF總覽・技術圖・成份股・複利計算機</title>
+<meta name="description" content="台股熱門ETF一站式試算工具：0050、006208、0056、00878、00919、00929、00631L、00981A 等被動型、高股息、槓桿型與主動型ETF資訊，含技術線圖、成份股與複利計算機。本站僅供參考，不構成投資建議。">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📈</text></svg>">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<header class="site-header">
+  <div class="container header-inner">
+    <a class="brand" href="#top">📈 台股 ETF 試算機</a>
+    <nav class="main-nav">
+      <a href="#etf-list">ETF 總覽</a>
+      <a href="#etf-detail">技術圖・成份股</a>
+      <a href="#calculator">複利計算機</a>
+      <a href="#knowledge">投資小教室</a>
+    </nav>
+  </div>
+</header>
+
+<main id="top">
+
+  <!-- Hero -->
+  <section class="hero">
+    <div class="container">
+      <h1>台股熱門 ETF 一站式試算</h1>
+      <p>被動市值型・高股息・槓桿反向・主動型，涵蓋 0050、006208、0056、00878、00631L、00981A 等熱門標的。<br>
+      查資訊、看線圖、算複利，三步驟搞定你的長期投資規劃。</p>
+      <div class="hero-actions">
+        <a class="btn btn-primary" href="#etf-list">瀏覽熱門 ETF</a>
+        <a class="btn btn-ghost" href="#calculator">立即試算複利</a>
+      </div>
+      <p class="hero-note">⚠️ 本網站所有資料僅供參考與教育用途，不構成任何投資建議。</p>
+    </div>
+  </section>
+
+  <!-- ETF List -->
+  <section id="etf-list" class="section">
+    <div class="container">
+      <h2 class="section-title">熱門台股 ETF 總覽</h2>
+      <p class="section-sub">點選任一張卡片可查看詳細資訊、技術線圖與成份股。資料為整理之參考值，實際數據請以各投信公司與證交所公告為準。</p>
+
+      <div class="filter-tabs" id="filterTabs">
+        <button class="tab active" data-filter="all">全部</button>
+        <button class="tab" data-filter="market">被動市值型</button>
+        <button class="tab" data-filter="dividend">高股息型</button>
+        <button class="tab" data-filter="leveraged">槓桿／反向型</button>
+        <button class="tab" data-filter="active">主動型</button>
+      </div>
+
+      <div class="etf-grid" id="etfGrid"><!-- JS render --></div>
+    </div>
+  </section>
+
+  <!-- ETF Detail -->
+  <section id="etf-detail" class="section section-alt">
+    <div class="container">
+      <h2 class="section-title">ETF 詳細資訊</h2>
+      <div class="detail-picker">
+        <label for="etfSelect">選擇 ETF：</label>
+        <select id="etfSelect"></select>
+      </div>
+
+      <div class="detail-card" id="detailCard"><!-- JS render --></div>
+
+      <div class="detail-grid">
+        <div class="panel">
+          <h3>📊 技術線圖</h3>
+          <p class="panel-note">即時線圖由 TradingView 提供，可切換週期與技術指標（均線、KD、MACD…）。</p>
+          <div class="tv-wrap">
+            <div id="tvChart" class="tv-chart">
+              <div class="tv-loading">載入線圖中…<br><small>若長時間未顯示，可能是瀏覽器封鎖了外部圖表服務。</small></div>
+            </div>
+          </div>
+        </div>
+        <div class="panel">
+          <h3>🧩 前十大成份股／持倉</h3>
+          <p class="panel-note" id="holdingsNote"></p>
+          <table class="holdings-table">
+            <thead><tr><th>#</th><th>名稱</th><th>權重(約)</th><th></th></tr></thead>
+            <tbody id="holdingsBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Compound Calculator -->
+  <section id="calculator" class="section">
+    <div class="container">
+      <h2 class="section-title">💰 複利計算機</h2>
+      <p class="section-sub">模擬「單筆投入＋每月定期定額」長期投資的複利效果。可直接套用各 ETF 的參考年化報酬率，或自行輸入。<br>
+      <strong>提醒：</strong>歷史報酬不代表未來績效，槓桿型 ETF 因每日重設機制，長期報酬會偏離指數倍數，不適合用固定年化報酬率推估長期結果。</p>
+
+      <div class="calc-layout">
+        <div class="panel calc-form">
+          <div class="field">
+            <label for="calcEtf">套用 ETF 參考年化報酬率（可選）</label>
+            <select id="calcEtf">
+              <option value="">— 自行輸入 —</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="initialAmount">單筆初始投入（元）</label>
+            <input type="number" id="initialAmount" min="0" step="1000" value="100000">
+          </div>
+          <div class="field">
+            <label for="monthlyAmount">每月定期定額（元）</label>
+            <input type="number" id="monthlyAmount" min="0" step="1000" value="10000">
+          </div>
+          <div class="field">
+            <label for="annualReturn">預估年化報酬率（%）</label>
+            <input type="number" id="annualReturn" step="0.1" value="8">
+          </div>
+          <div class="field">
+            <label for="years">投資年數</label>
+            <input type="number" id="years" min="1" max="60" step="1" value="20">
+          </div>
+          <div class="field">
+            <label for="inflation">年通膨率（%，選填，用於估算實質購買力）</label>
+            <input type="number" id="inflation" step="0.1" value="2">
+          </div>
+          <button class="btn btn-primary btn-block" id="calcBtn">開始試算 🚀</button>
+        </div>
+
+        <div class="calc-results">
+          <div class="result-cards" id="resultCards"><!-- JS render --></div>
+          <div class="panel chart-panel">
+            <canvas id="growthChart" height="280"></canvas>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel table-panel">
+        <h3>逐年明細</h3>
+        <div class="table-scroll">
+          <table class="year-table">
+            <thead><tr><th>年度</th><th>累計投入</th><th>年末資產</th><th>累計獲利</th><th>累計報酬率</th></tr></thead>
+            <tbody id="yearTableBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Knowledge -->
+  <section id="knowledge" class="section section-alt">
+    <div class="container">
+      <h2 class="section-title">📚 投資小教室</h2>
+      <div class="knowledge-grid">
+        <div class="panel">
+          <h3>被動市值型 ETF</h3>
+          <p>如 0050、006208，追蹤市值加權指數（臺灣50指數），買進台灣市值最大的一籃子公司，費用低、與大盤連動高，適合作為長期核心資產。</p>
+        </div>
+        <div class="panel">
+          <h3>高股息型 ETF</h3>
+          <p>如 0056、00878、00919，以「股息殖利率」為主要選股邏輯，配息頻率高、現金流穩定，但總報酬（含息）長期不一定優於市值型，須留意配息來源與填息能力。</p>
+        </div>
+        <div class="panel">
+          <h3>槓桿／反向型 ETF</h3>
+          <p>如 00631L（兩倍做多）、00632R（一倍做空），透過期貨達到單「日」報酬倍數，因每日重設與波動耗損，長期報酬會偏離指數倍數，屬於短線交易工具，不適合長期buy&hold與定期定額。</p>
+        </div>
+        <div class="panel">
+          <h3>主動型 ETF</h3>
+          <p>如 00980A、00981A、00982A（2025 年起掛牌），由經理人主動選股、不追蹤特定指數，目標是打敗大盤，但費用較高、績效取決於團隊功力，成立時間尚短，過往資料有限。</p>
+        </div>
+        <div class="panel">
+          <h3>複利的力量</h3>
+          <p>愛因斯坦曾被引述：「複利是世界第八大奇蹟。」時間是複利最好的朋友——越早開始、持續投入、不中斷，長期成果往往遠勝於追逐短線進出。</p>
+        </div>
+        <div class="panel">
+          <h3>風險提醒</h3>
+          <p>ETF 雖分散個股風險，仍有市場風險、流動性風險、折溢價風險與匯率風險（海外成份）。投資前請務必詳閱公開說明書，並評估自身風險承受度。</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer class="site-footer">
+  <div class="container">
+    <div class="disclaimer-box">
+      <h3>⚠️ 投資理財警語與免責聲明</h3>
+      <p class="slogan">「本網站僅供參考與教育用途，所有內容均<strong>不構成任何投資建議</strong>。」</p>
+      <p>本網站所載之 ETF 資訊、成份股、費用率與報酬率均為整理之參考資料，可能與實際數據有所出入，且不保證其正確性與即時性；實際資訊請以臺灣證券交易所、各發行投信公司之公告為準。複利計算機之試算結果僅為數學模擬，<strong>過去績效不代表未來表現</strong>。</p>
+      <p>投資一定有風險，ETF 投資有賺有賠，申購前應詳閱公開說明書。任何投資決策請依個人風險承受度審慎評估，必要時請諮詢合法之專業理財顧問。本網站對任何依據本站資訊所做之投資決策與其結果，不負任何法律責任。</p>
+    </div>
+    <p class="copyright">© 2026 台股 ETF 試算機｜資料僅供參考，理財請量力而為。</p>
+  </div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
+<script src="https://s3.tradingview.com/tv.js"></script>
+<script src="js/data.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>
