@@ -10,13 +10,15 @@ on:
 permissions:
   contents: write
   pages: write
+  id-token: write
 
 concurrency:
   group: pages
   cancel-in-progress: true
 
 jobs:
-  deploy:
+  # 將靜態網站同步到 gh-pages 分支（備用部署來源）
+  publish-branch:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -29,25 +31,24 @@ jobs:
           publish_dir: .
           exclude_assets: '.github'
 
-      - name: Enable GitHub Pages (serve from gh-pages branch)
-        run: |
-          api="https://api.github.com/repos/${{ github.repository }}/pages"
-          auth="Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}"
-          accept="Accept: application/vnd.github+json"
+  # 官方 GitHub Pages 部署（build_type: workflow）
+  deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
 
-          status=$(curl -s -o /tmp/pages.json -w "%{http_code}" -H "$auth" -H "$accept" "$api")
-          echo "GET /pages -> $status"
-          cat /tmp/pages.json
+      - name: Setup Pages
+        uses: actions/configure-pages@v5
 
-          if [ "$status" = "404" ]; then
-            echo "Creating Pages site (legacy, gh-pages)"
-            curl -s -X POST -H "$auth" -H "$accept" "$api" \
-              -d '{"build_type":"legacy","source":{"branch":"gh-pages","path":"/"}}'
-          else
-            echo "Updating Pages config to legacy gh-pages"
-            curl -s -X PUT -H "$auth" -H "$accept" "$api" \
-              -d '{"build_type":"legacy","source":{"branch":"gh-pages","path":"/"}}'
-          fi
+      - name: Upload site
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: .
 
-          echo "Requesting a Pages build"
-          curl -s -X POST -H "$auth" -H "$accept" "$api/builds"
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
