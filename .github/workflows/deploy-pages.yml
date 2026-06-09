@@ -31,15 +31,23 @@ jobs:
 
       - name: Enable GitHub Pages (serve from gh-pages branch)
         run: |
-          status=$(curl -s -o /dev/null -w "%{http_code}" \
-            -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
-            -H "Accept: application/vnd.github+json" \
-            "https://api.github.com/repos/${{ github.repository }}/pages")
-          echo "Current Pages API status: $status"
+          api="https://api.github.com/repos/${{ github.repository }}/pages"
+          auth="Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}"
+          accept="Accept: application/vnd.github+json"
+
+          status=$(curl -s -o /tmp/pages.json -w "%{http_code}" -H "$auth" -H "$accept" "$api")
+          echo "GET /pages -> $status"
+          cat /tmp/pages.json
+
           if [ "$status" = "404" ]; then
-            curl -s -X POST \
-              -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
-              -H "Accept: application/vnd.github+json" \
-              "https://api.github.com/repos/${{ github.repository }}/pages" \
+            echo "Creating Pages site (legacy, gh-pages)"
+            curl -s -X POST -H "$auth" -H "$accept" "$api" \
+              -d '{"build_type":"legacy","source":{"branch":"gh-pages","path":"/"}}'
+          else
+            echo "Updating Pages config to legacy gh-pages"
+            curl -s -X PUT -H "$auth" -H "$accept" "$api" \
               -d '{"build_type":"legacy","source":{"branch":"gh-pages","path":"/"}}'
           fi
+
+          echo "Requesting a Pages build"
+          curl -s -X POST -H "$auth" -H "$accept" "$api/builds"
