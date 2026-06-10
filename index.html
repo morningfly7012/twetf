@@ -4,7 +4,8 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>台股 ETF 試算機｜熱門ETF總覽・技術圖・成份股・複利計算機</title>
-<meta name="description" content="台股熱門ETF一站式試算工具：0050、006208、0056、00878、00919、00929、00631L、00981A 等被動型、高股息、槓桿型與主動型ETF資訊，含技術線圖、成份股與複利計算機。本站僅供參考，不構成投資建議。">
+<meta name="description" content="台股熱門ETF一站式試算工具：0050、006208、0056、00878、00919、00929、00891、00631L、00981A 等市值型、高股息、產業主題、槓桿型與主動型ETF資訊，含技術線圖、全部成份股與複利計算機。本站僅供參考，不構成投資建議。">
+<meta name="theme-color" content="#0f1420">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📈</text></svg>">
 <link rel="stylesheet" href="css/style.css">
 </head>
@@ -28,7 +29,7 @@
   <section class="hero">
     <div class="container">
       <h1>台股熱門 ETF 一站式試算</h1>
-      <p>被動市值型・高股息・槓桿反向・主動型，涵蓋 0050、006208、0056、00878、00631L、00981A 等熱門標的。<br>
+      <p>市值型・高股息・產業主題・槓桿反向・主動型，共 26 檔熱門標的：0050、006208、0056、00878、00891、00631L、00981A⋯<br>
       查資訊、看線圖、算複利，三步驟搞定你的長期投資規劃。</p>
       <div class="hero-actions">
         <a class="btn btn-primary" href="#etf-list">瀏覽熱門 ETF</a>
@@ -48,6 +49,7 @@
         <button class="tab active" data-filter="all">全部</button>
         <button class="tab" data-filter="market">被動市值型</button>
         <button class="tab" data-filter="dividend">高股息型</button>
+        <button class="tab" data-filter="theme">產業主題型</button>
         <button class="tab" data-filter="leveraged">槓桿／反向型</button>
         <button class="tab" data-filter="active">主動型</button>
       </div>
@@ -70,20 +72,40 @@
       <div class="detail-grid">
         <div class="panel">
           <h3>📊 技術線圖</h3>
-          <p class="panel-note">即時線圖由 TradingView 提供，可切換週期與技術指標（均線、KD、MACD…）。</p>
-          <div class="tv-wrap">
-            <div id="tvChart" class="tv-chart">
-              <div class="tv-loading">載入線圖中…<br><small>若長時間未顯示，可能是瀏覽器封鎖了外部圖表服務。</small></div>
+          <div class="chart-toolbar">
+            <div class="chart-tabs" id="chartTabs">
+              <button class="ctab active" data-src="twse">走勢圖（證交所資料）</button>
+              <button class="ctab" data-src="tv">TradingView</button>
+            </div>
+            <div class="range-btns" id="rangeBtns">
+              <button class="rbtn" data-m="1">1月</button>
+              <button class="rbtn active" data-m="3">3月</button>
+              <button class="rbtn" data-m="6">6月</button>
+              <button class="rbtn" data-m="12">1年</button>
             </div>
           </div>
+          <p class="chart-status" id="chartStatus">載入中…</p>
+          <div class="chart-area">
+            <div id="twseChartWrap" class="twse-chart-wrap">
+              <canvas id="priceChart"></canvas>
+            </div>
+            <div id="tvContainer" class="tv-chart" style="display:none"></div>
+          </div>
+          <p class="panel-note" style="margin-top:10px">走勢圖使用臺灣證券交易所每日收盤資料繪製（含 MA5／MA20／MA60 均線）；TradingView 分頁為即時嵌入圖，若被瀏覽器或廣告攔截器擋住，可點狀態列的外開連結。</p>
         </div>
         <div class="panel">
-          <h3>🧩 前十大成份股／持倉</h3>
+          <h3>🧩 成份股（全部）</h3>
           <p class="panel-note" id="holdingsNote"></p>
-          <table class="holdings-table">
-            <thead><tr><th>#</th><th>名稱</th><th>權重(約)</th><th></th></tr></thead>
-            <tbody id="holdingsBody"></tbody>
-          </table>
+          <div class="holdings-toolbar">
+            <input type="search" id="holdingsSearch" placeholder="搜尋成份股名稱…">
+            <span class="holdings-count" id="holdingsCount"></span>
+          </div>
+          <div class="holdings-scroll">
+            <table class="holdings-table">
+              <thead><tr><th>#</th><th>名稱</th><th>權重(約)</th><th></th></tr></thead>
+              <tbody id="holdingsBody"></tbody>
+            </table>
+          </div>
         </div>
       </div>
     </div>
@@ -161,6 +183,10 @@
           <p>如 0056、00878、00919，以「股息殖利率」為主要選股邏輯，配息頻率高、現金流穩定，但總報酬（含息）長期不一定優於市值型，須留意配息來源與填息能力。</p>
         </div>
         <div class="panel">
+          <h3>產業主題型 ETF</h3>
+          <p>如 00881（5G）、00891／00892（半導體）、00935（AI 新科技），集中押注單一產業趨勢，漲時兇、跌時也重，產業集中度高，適合作為衛星持股而非核心資產。</p>
+        </div>
+        <div class="panel">
           <h3>槓桿／反向型 ETF</h3>
           <p>如 00631L（兩倍做多）、00632R（一倍做空），透過期貨達到單「日」報酬倍數，因每日重設與波動耗損，長期報酬會偏離指數倍數，屬於短線交易工具，不適合長期buy&hold與定期定額。</p>
         </div>
@@ -195,7 +221,6 @@
 </footer>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
-<script src="https://s3.tradingview.com/tv.js"></script>
 <script src="js/data.js"></script>
 <script src="js/app.js"></script>
 </body>
