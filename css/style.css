@@ -97,6 +97,7 @@ a { color: var(--accent); text-decoration: none; }
 }
 .badge-market { background: rgba(79,140,255,.18); color: #7daaff; }
 .badge-dividend { background: rgba(56,217,169,.16); color: #4fe3b8; }
+.badge-theme { background: rgba(186,131,255,.18); color: #c79bff; }
 .badge-leveraged { background: rgba(255,107,107,.16); color: #ff8a8a; }
 .badge-active { background: rgba(255,177,78,.16); color: #ffc169; }
 
@@ -138,16 +139,41 @@ a { color: var(--accent); text-decoration: none; }
 .panel h3 { margin-bottom: 8px; font-size: 1.08rem; }
 .panel-note { color: var(--text-dim); font-size: 0.82rem; margin-bottom: 14px; }
 
-.tv-wrap { border-radius: 10px; overflow: hidden; border: 1px solid var(--panel-border); }
-.tv-chart { height: 430px; background: #0d1117; }
-.tv-loading { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; color: var(--text-dim); text-align: center; }
+/* ===== Chart area ===== */
+.chart-toolbar { display: flex; justify-content: space-between; align-items: center; gap: 10px; flex-wrap: wrap; margin-bottom: 8px; }
+.chart-tabs, .range-btns { display: flex; gap: 6px; flex-wrap: wrap; }
+.ctab, .rbtn {
+  padding: 6px 12px; border-radius: 8px; border: 1px solid var(--panel-border);
+  background: transparent; color: var(--text-dim); cursor: pointer; font-size: 0.82rem; transition: all .2s;
+}
+.ctab:hover, .rbtn:hover { color: var(--text); border-color: var(--accent); }
+.ctab.active, .rbtn.active { background: var(--accent); border-color: var(--accent); color: #fff; }
+
+.chart-status { font-size: 0.85rem; color: var(--text-dim); margin: 6px 0 10px; min-height: 1.4em; }
+.chart-status a { text-decoration: underline; }
+.chart-up strong { color: var(--accent-2); }
+.chart-down strong { color: var(--danger); }
+.chart-error { color: var(--warn); }
+
+.chart-area { border-radius: 10px; overflow: hidden; border: 1px solid var(--panel-border); background: #0d1117; }
+.twse-chart-wrap { height: 400px; padding: 10px; }
+.tv-chart { height: 400px; background: #0d1117; }
 
 /* ===== Holdings table ===== */
+.holdings-toolbar { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; flex-wrap: wrap; }
+.holdings-toolbar input {
+  flex: 1; min-width: 150px; background: var(--bg); color: var(--text);
+  border: 1px solid var(--panel-border); border-radius: 8px; padding: 8px 12px; font-size: 16px;
+}
+.holdings-toolbar input:focus { outline: none; border-color: var(--accent); }
+.holdings-count { font-size: 0.8rem; color: var(--text-dim); white-space: nowrap; }
+
+.holdings-scroll { max-height: 460px; overflow-y: auto; -webkit-overflow-scrolling: touch; border-radius: 8px; }
 .holdings-table { width: 100%; border-collapse: collapse; font-size: 0.92rem; }
 .holdings-table th, .holdings-table td { padding: 8px 8px; text-align: left; border-bottom: 1px solid var(--panel-border); }
-.holdings-table th { color: var(--text-dim); font-weight: 600; font-size: 0.8rem; }
+.holdings-table th { color: var(--text-dim); font-weight: 600; font-size: 0.8rem; position: sticky; top: 0; background: var(--panel); z-index: 1; }
 .weight-bar-wrap { width: 100px; }
-.weight-bar { height: 8px; border-radius: 4px; background: linear-gradient(90deg, var(--accent), var(--accent-2)); }
+.weight-bar { height: 8px; border-radius: 4px; background: linear-gradient(90deg, var(--accent), var(--accent-2)); min-width: 2px; }
 
 /* ===== Calculator ===== */
 .calc-layout { display: grid; grid-template-columns: 360px 1fr; gap: 18px; margin-bottom: 18px; }
@@ -198,7 +224,75 @@ a { color: var(--accent); text-decoration: none; }
 .disclaimer-box p { color: var(--text-dim); font-size: 0.88rem; margin-bottom: 10px; }
 .copyright { text-align: center; color: #5b6b86; font-size: 0.82rem; }
 
-@media (max-width: 640px) {
-  .hero h1 { font-size: 1.7rem; }
-  .main-nav { display: none; }
+/* ===== 手機版優化 ===== */
+@media (max-width: 768px) {
+  .section { padding: 44px 0; }
+  .container { padding: 0 14px; }
+
+  /* 導覽列改為可橫向滑動，不再隱藏 */
+  .header-inner { height: auto; flex-direction: column; align-items: stretch; gap: 2px; padding: 8px 0; }
+  .brand { font-size: 1.05rem; text-align: center; }
+  .main-nav {
+    display: flex; gap: 4px; overflow-x: auto; -webkit-overflow-scrolling: touch;
+    justify-content: flex-start; padding-bottom: 4px; scrollbar-width: none;
+  }
+  .main-nav::-webkit-scrollbar { display: none; }
+  .main-nav a { margin-left: 0; padding: 6px 10px; white-space: nowrap; font-size: 0.88rem; }
+
+  .hero { padding: 42px 0 36px; }
+  .hero h1 { font-size: 1.55rem; }
+  .hero p { font-size: 0.92rem; }
+  .hero-actions .btn { width: 100%; text-align: center; }
+  .hero-actions { flex-direction: column; gap: 10px; padding: 0 8px; }
+
+  .section-title { font-size: 1.35rem; }
+
+  /* 篩選列改為可橫向滑動 */
+  .filter-tabs {
+    flex-wrap: nowrap; overflow-x: auto; -webkit-overflow-scrolling: touch;
+    padding-bottom: 6px; scrollbar-width: none;
+  }
+  .filter-tabs::-webkit-scrollbar { display: none; }
+  .tab { white-space: nowrap; flex-shrink: 0; }
+
+  .etf-grid { grid-template-columns: 1fr 1fr; gap: 10px; }
+  .etf-card { padding: 13px; }
+  .etf-card .code { font-size: 1.05rem; }
+  .etf-card .name { font-size: 0.84rem; }
+  .etf-card .meta { font-size: 0.76rem; }
+  .badge { font-size: 0.62rem; padding: 2px 7px; }
+
+  .detail-picker select { min-width: 0; width: 100%; font-size: 16px; }
+  .detail-card { padding: 16px; }
+  .detail-head .code { font-size: 1.3rem; }
+  .fact-grid { grid-template-columns: 1fr 1fr; gap: 8px; }
+  .fact .value { font-size: 0.92rem; }
+  .detail-actions { display: flex; flex-direction: column; gap: 10px; }
+  .detail-actions .btn { width: 100%; text-align: center; }
+
+  .panel { padding: 14px; }
+  .twse-chart-wrap, .tv-chart { height: 300px; }
+  .chart-toolbar { flex-direction: column; align-items: stretch; }
+  .holdings-scroll { max-height: 380px; }
+  .weight-bar-wrap { width: 56px; }
+  .holdings-table { font-size: 0.84rem; }
+  .holdings-table th, .holdings-table td { padding: 7px 5px; }
+
+  /* 表單輸入維持 16px 以避免 iOS 自動放大 */
+  .calc-form input, .calc-form select { font-size: 16px; padding: 12px; }
+  .result-cards { grid-template-columns: 1fr 1fr; gap: 8px; }
+  .result-card { padding: 12px 8px; }
+  .result-card .value { font-size: 1.05rem; }
+  .chart-panel { min-height: 240px; }
+  .year-table { font-size: 0.8rem; }
+  .year-table th, .year-table td { padding: 7px 6px; }
+  .table-scroll { max-height: 300px; -webkit-overflow-scrolling: touch; }
+
+  .disclaimer-box { padding: 18px 14px; }
+  .disclaimer-box .slogan { font-size: 1rem; }
+}
+
+@media (max-width: 400px) {
+  .etf-grid { grid-template-columns: 1fr; }
+  .result-cards { grid-template-columns: 1fr; }
 }
